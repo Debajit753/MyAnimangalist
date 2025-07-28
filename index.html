@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyAnimangalist - Track Anime, Manga, Manhwa & Manhua</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <h1 class="header__title">MyAnimangalist</h1>
+                <p class="header__subtitle">Track your favorite anime, manga, manhwa, and manhua. Discover new titles and manage your progress in one place.</p>
+                <div class="header__actions">
+                    <button id="theme-toggle" class="btn btn--outline btn--sm">🌙 Dark Mode</button>
+                    <button id="import-btn" class="btn btn--secondary btn--sm">Import Data</button>
+                    <button id="export-btn" class="btn btn--secondary btn--sm">Export Data</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Main Navigation Tabs -->
+            <nav class="main-tabs">
+                <div class="main-tabs__nav">
+                    <button class="main-tab-btn active" data-main-tab="anime">
+                        📺 Anime
+                    </button>
+                    <button class="main-tab-btn" data-main-tab="manga">
+                        📚 Manga
+                    </button>
+                    <button class="main-tab-btn" data-main-tab="manhwa">
+                        🇰🇷 Manhwa
+                    </button>
+                    <button class="main-tab-btn" data-main-tab="manhua">
+                        🇨🇳 Manhua
+                    </button>
+                    <button class="main-tab-btn" data-main-tab="stats">
+                        📊 Statistics
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Statistics Tab -->
+            <section id="stats-tab" class="tab-content hidden">
+                <div class="stats-dashboard">
+                    <div class="stats__grid">
+                        <div class="stat-card">
+                            <div class="stat-card__number" id="total-entries">0</div>
+                            <div class="stat-card__label">Total Entries</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__number" id="completed-entries">0</div>
+                            <div class="stat-card__label">Completed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__number" id="in-progress-entries">0</div>
+                            <div class="stat-card__label">In Progress</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__number" id="avg-rating">0.0</div>
+                            <div class="stat-card__label">Avg Rating</div>
+                        </div>
+                    </div>
+                    
+                    <div class="charts-container">
+                        <div class="chart-section">
+                            <h3>Distribution by Type</h3>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="type-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-section">
+                            <h3>Status Distribution</h3>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="status-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Anime Tab -->
+            <section id="anime-tab" class="tab-content">
+                <div class="media-section">
+                    <!-- Search Section -->
+                    <div class="search-section">
+                        <div class="search-container">
+                            <input type="text" id="anime-search" class="form-control search-input" placeholder="Search Jikan API for anime...">
+                            <button id="anime-search-btn" class="btn btn--primary">Search</button>
+                        </div>
+                        <div id="anime-search-results" class="search-results hidden"></div>
+                    </div>
+
+                    <!-- Add Manual Entry -->
+                    <div class="manual-entry">
+                        <button id="add-anime-manual" class="btn btn--secondary">Add Anime Manually</button>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="filters">
+                        <select id="anime-status-filter" class="form-control">
+                            <option value="">All Status</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Watching">Watching</option>
+                            <option value="Plan to Watch">Plan to Watch</option>
+                            <option value="Dropped">Dropped</option>
+                            <option value="On Hold">On Hold</option>
+                        </select>
+                        <select id="anime-rating-filter" class="form-control">
+                            <option value="">All Ratings</option>
+                            <option value="10">10</option>
+                            <option value="9">9+</option>
+                            <option value="8">8+</option>
+                            <option value="7">7+</option>
+                            <option value="6">6+</option>
+                        </select>
+                        <select id="anime-genre-filter" class="form-control">
+                            <option value="">All Genres</option>
+                            <option value="Action">Action</option>
+                            <option value="Adventure">Adventure</option>
+                            <option value="Comedy">Comedy</option>
+                            <option value="Drama">Drama</option>
+                            <option value="Fantasy">Fantasy</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Sci-Fi">Sci-Fi</option>
+                        </select>
+                    </div>
+
+                    <!-- Anime Grid -->
+                    <div id="anime-grid" class="entries-grid"></div>
+                </div>
+            </section>
+
+            <!-- Manga Tab -->
+            <section id="manga-tab" class="tab-content hidden">
+                <div class="media-section">
+                    <!-- Search Section -->
+                    <div class="search-section">
+                        <div class="search-container">
+                            <input type="text" id="manga-search" class="form-control search-input" placeholder="Search Jikan API for manga...">
+                            <button id="manga-search-btn" class="btn btn--primary">Search</button>
+                        </div>
+                        <div id="manga-search-results" class="search-results hidden"></div>
+                    </div>
+
+                    <!-- Add Manual Entry -->
+                    <div class="manual-entry">
+                        <button id="add-manga-manual" class="btn btn--secondary">Add Manga Manually</button>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="filters">
+                        <select id="manga-status-filter" class="form-control">
+                            <option value="">All Status</option>
+                            <option value="Reading">Reading</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Plan to Read">Plan to Read</option>
+                            <option value="Dropped">Dropped</option>
+                            <option value="On Hold">On Hold</option>
+                        </select>
+                        <select id="manga-rating-filter" class="form-control">
+                            <option value="">All Ratings</option>
+                            <option value="10">10</option>
+                            <option value="9">9+</option>
+                            <option value="8">8+</option>
+                            <option value="7">7+</option>
+                            <option value="6">6+</option>
+                        </select>
+                        <select id="manga-genre-filter" class="form-control">
+                            <option value="">All Genres</option>
+                            <option value="Action">Action</option>
+                            <option value="Adventure">Adventure</option>
+                            <option value="Comedy">Comedy</option>
+                            <option value="Drama">Drama</option>
+                            <option value="Fantasy">Fantasy</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Supernatural">Supernatural</option>
+                        </select>
+                    </div>
+
+                    <!-- Manga Grid -->
+                    <div id="manga-grid" class="entries-grid"></div>
+                </div>
+            </section>
+
+            <!-- Manhwa Tab -->
+            <section id="manhwa-tab" class="tab-content hidden">
+                <div class="media-section">
+                    <!-- Search Section -->
+                    <div class="search-section">
+                        <div class="search-container">
+                            <input type="text" id="manhwa-search" class="form-control search-input" placeholder="Search popular manhwa titles...">
+                            <button id="manhwa-search-btn" class="btn btn--primary">Search</button>
+                        </div>
+                        <div id="manhwa-search-results" class="search-results hidden"></div>
+                    </div>
+
+                    <!-- Add Manual Entry -->
+                    <div class="manual-entry">
+                        <button id="add-manhwa-manual" class="btn btn--secondary">Add Manhwa Manually</button>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="filters">
+                        <select id="manhwa-status-filter" class="form-control">
+                            <option value="">All Status</option>
+                            <option value="Reading">Reading</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Plan to Read">Plan to Read</option>
+                            <option value="Dropped">Dropped</option>
+                            <option value="On Hold">On Hold</option>
+                        </select>
+                        <select id="manhwa-rating-filter" class="form-control">
+                            <option value="">All Ratings</option>
+                            <option value="10">10</option>
+                            <option value="9">9+</option>
+                            <option value="8">8+</option>
+                            <option value="7">7+</option>
+                            <option value="6">6+</option>
+                        </select>
+                        <select id="manhwa-genre-filter" class="form-control">
+                            <option value="">All Genres</option>
+                            <option value="Action">Action</option>
+                            <option value="Fantasy">Fantasy</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Drama">Drama</option>
+                            <option value="Supernatural">Supernatural</option>
+                        </select>
+                    </div>
+
+                    <!-- Manhwa Grid -->
+                    <div id="manhwa-grid" class="entries-grid"></div>
+                </div>
+            </section>
+
+            <!-- Manhua Tab -->
+            <section id="manhua-tab" class="tab-content hidden">
+                <div class="media-section">
+                    <!-- Search Section -->
+                    <div class="search-section">
+                        <div class="search-container">
+                            <input type="text" id="manhua-search" class="form-control search-input" placeholder="Search popular manhua titles...">
+                            <button id="manhua-search-btn" class="btn btn--primary">Search</button>
+                        </div>
+                        <div id="manhua-search-results" class="search-results hidden"></div>
+                    </div>
+
+                    <!-- Add Manual Entry -->
+                    <div class="manual-entry">
+                        <button id="add-manhua-manual" class="btn btn--secondary">Add Manhua Manually</button>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="filters">
+                        <select id="manhua-status-filter" class="form-control">
+                            <option value="">All Status</option>
+                            <option value="Reading">Reading</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Plan to Read">Plan to Read</option>
+                            <option value="Dropped">Dropped</option>
+                            <option value="On Hold">On Hold</option>
+                        </select>
+                        <select id="manhua-rating-filter" class="form-control">
+                            <option value="">All Ratings</option>
+                            <option value="10">10</option>
+                            <option value="9">9+</option>
+                            <option value="8">8+</option>
+                            <option value="7">7+</option>
+                            <option value="6">6+</option>
+                        </select>
+                        <select id="manhua-genre-filter" class="form-control">
+                            <option value="">All Genres</option>
+                            <option value="Action">Action</option>
+                            <option value="Fantasy">Fantasy</option>
+                            <option value="Adventure">Adventure</option>
+                            <option value="Martial Arts">Martial Arts</option>
+                            <option value="Cultivation">Cultivation</option>
+                        </select>
+                    </div>
+
+                    <!-- Manhua Grid -->
+                    <div id="manhua-grid" class="entries-grid"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Add/Edit Modal -->
+    <div id="entry-modal" class="modal hidden">
+        <div class="modal__overlay"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <h3 id="modal-title">Add Entry</h3>
+                <button class="modal__close" id="close-modal">&times;</button>
+            </div>
+            <div class="modal__body">
+                <form id="entry-form" class="entry-form">
+                    <input type="hidden" id="entry-id">
+                    <input type="hidden" id="entry-type">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="entry-title" class="form-label">Title *</label>
+                            <input type="text" id="entry-title" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="entry-year" class="form-label">Year</label>
+                            <input type="number" id="entry-year" class="form-control" min="1900" max="2030">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="entry-status" class="form-label">Status *</label>
+                            <select id="entry-status" class="form-control" required>
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Rating</label>
+                            <div class="rating-container">
+                                <div class="star-rating" id="modal-star-rating"></div>
+                                <span class="rating-value" id="rating-display">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row" id="progress-row">
+                        <div class="form-group">
+                            <label for="current-progress" class="form-label">Current Episodes/Chapters</label>
+                            <input type="number" id="current-progress" class="form-control" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="total-progress" class="form-label">Total Episodes/Chapters</label>
+                            <input type="number" id="total-progress" class="form-control" min="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="entry-genres" class="form-label">Genres</label>
+                        <input type="text" id="entry-genres" class="form-control" placeholder="Action, Adventure, Drama">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="entry-synopsis" class="form-label">Synopsis</label>
+                        <textarea id="entry-synopsis" class="form-control" rows="3" placeholder="Brief description..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="entry-notes" class="form-label">Personal Notes</label>
+                        <textarea id="entry-notes" class="form-control" rows="2" placeholder="Your thoughts..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn--primary" id="save-entry-btn">Save Entry</button>
+                        <button type="button" class="btn btn--secondary" id="cancel-entry">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div id="import-modal" class="modal hidden">
+        <div class="modal__overlay"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <h3>Import Data</h3>
+                <button class="modal__close" id="close-import-modal">&times;</button>
+            </div>
+            <div class="modal__body">
+                <div class="import-options">
+                    <div class="import-option">
+                        <h4>Import from JSON</h4>
+                        <p class="text-sm">Import your previously exported MyAnimangalist data</p>
+                        <input type="file" id="json-file-input" accept=".json" class="form-control">
+                        <button id="import-json" class="btn btn--primary">Import JSON</button>
+                    </div>
+                    <div class="import-option">
+                        <h4>Import from CSV</h4>
+                        <p class="text-sm">Import from other tracking applications using CSV format</p>
+                        <input type="file" id="csv-file-input" accept=".csv" class="form-control">
+                        <button id="import-csv" class="btn btn--primary">Import CSV</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
